@@ -26,7 +26,7 @@ end
 
 function ProcessCheck(input)
     local cfg = Config.Process[1]
-    local sum = input[2]
+    local sum = input[1]
     local buckets = Inventory:GetItem(source, 'full_bucket', nill, true)
     if buckets >= sum then 
         return true 
@@ -144,24 +144,54 @@ end)
 
 RegisterNetEvent("mining:Process", function(input)
     local cfg = Config.Notifications[1]
-    local gemRocks = math.floor(input[2] / 5)
+    local gemRocks = math.floor(input[1] / Config.Process[1].GiveGemRock)
+    
     if ProcessCheck(input) == true then 
-        TriggerClientEvent("mining:processCircle", source, input, gemRocks)
+        local amount = input[1]
+        local processedMaterial = nil
+        
+        -- Calculate the total chance for all material options
+        local totalChance = 0
+        for _, option in ipairs(Config.Process[1].options) do
+            totalChance = totalChance + option.chance
+        end
+        
+        -- Generate a random number between 0 and totalChance
+        local randomValue = math.random() * totalChance
+        
+        -- Determine the processed material based on the random value
+        local cumulativeChance = 0
+        for _, option in ipairs(Config.Process[1].options) do
+            cumulativeChance = cumulativeChance + option.chance
+            if randomValue <= cumulativeChance then
+                processedMaterial = option.value
+                break
+            end
+        end
+        
+        -- Process the dirt with the selected material
+        -- Add your processing logic here
+        
+        TriggerClientEvent("mining:processCircle", source, input, gemRocks, processedMaterial) -- Pass processedMaterial as an additional parameter
+        
     else 
         lib.notify(source, cfg.ProcessNoDirt)
     end 
+    
     Wait(Config.Process[1].Time)
 end)
+
 
 RegisterNetEvent("mining:Reward", function(reward)
     Inventory:RemoveItem(source, 'empty_bucket', reward)
     Inventory:AddItem(source, 'full_bucket', reward)
 end)
 
-RegisterNetEvent("mining:processReward", function(input, gemRocks)
+RegisterNetEvent("mining:processReward", function(input, gemRocks, processedMaterial)
     local cfg = Config.Process[1]
-    Inventory:RemoveItem(source, cfg.ItemToProcess, input[2])
-    Inventory:AddItem(source, input[1], input[2])
+    Inventory:RemoveItem(source, cfg.ItemToProcess, input[1])
+    Inventory:AddItem(source, processedMaterial, input[1])
+    
     if gemRocks >= 1 then 
         Inventory:AddItem(source, 'gem_rock', gemRocks)
     end 
