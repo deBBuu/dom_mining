@@ -1,11 +1,6 @@
 Config = {}
 
-Config.Blip = {
-    Toggle = true,
-    Location = vec3(2707.3708, 2776.7751, 36.8780),
-    Scale = 1.0,
-    Color = 47,
-}
+Config.Blip = {}
 
 Config.Drill = {
     {
@@ -39,21 +34,17 @@ Config.Process = {
         ItemToProcess = 'full_bucket',
         Input = {
             { 
-                type = "select", 
-                label = "Select a meterial to process", 
-                options = {
-                -- Value = item to give / Label = display name
-                {value = 'copper', label = 'Copper'},
-                {value = 'iron', label = 'Iron'},
-                {value = 'gold', label = 'Gold'},
-                }
-            },
-            { 
                 type = "number", 
                 label = "Amount", 
                 placeholder = "123"
             },
         },
+        options = {
+            -- Value = item to give / Label = display name / Chance = drop chance
+            {value = 'copper', label = 'Copper', chance = 0},
+            {value = 'iron', label = 'Iron', chance = 50},
+            {value = 'gold', label = 'Gold', chance = 50},
+        }
     }
 }
 
@@ -75,20 +66,20 @@ Config.Mining = {
     {
         --Jackhammer
         Time = 5000,
-        MinReward = 10,
-        MaxReward = 15,
+        MinReward = 1,
+        MaxReward = 1,
     },
     {
         --Pickaxe
-        Time = 10000,
-        MinReward = 5,
-        MaxReward = 10,
+        Time = 30000,
+        MinReward = 1,
+        MaxReward = 1,
     },
     {
         --Shovel
         Time = 15000,
         MinReward = 1,
-        MaxReward = 5,
+        MaxReward = 1,
     },
     {
         RespawnTime = math.random(5000,15000), -- How long it takes for the rock to respawn
