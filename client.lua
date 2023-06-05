@@ -99,30 +99,30 @@ end)
 --! Process spawn + target options
 local cfg = Config.Process[1]
 Target:addSphereZone({
-  coords = cfg.ProcessLocation,
-  radius = 1,
-  debug = drawZones,
-  options = {
-      {
-        name = 'ox:option1',
-        icon = 'fa-solid fa-mortar-pestle',
-        label = 'Process Dirt',
-        onSelect = function()
-          local input = Input(cfg.Name, cfg.Input)
-
-          if not input then
-            return 
-          else 
-            if isProcess then return end 
-            isProcess = true
-            TriggerServerEvent("mining:Process", input)
-          end 
-         end
-      }
-  }
+    coords = cfg.ProcessLocation,
+    radius = 1,
+    debug = drawZones,
+    options = {
+        {
+            name = 'ox:option1',
+            icon = 'fa-solid fa-mortar-pestle',
+            label = cfg.Name,
+            onSelect = function()
+                local input = Input(cfg.Name, cfg.Input)
+        
+                if not input then
+                    return 
+                else 
+                    if isProcess then return end 
+                    isProcess = true
+                    TriggerServerEvent("mining:Process", input)
+                end 
+            end
+        }
+    }
 })
 
-RegisterNetEvent("mining:processCircle", function(input, gemRocks)
+RegisterNetEvent("mining:processCircle", function(input, gemRocks, processedMaterial)
   if lib.progressCircle({
     duration = Config.Process[1].Time,
     label = 'Cleaning Dirt',
@@ -136,11 +136,12 @@ RegisterNetEvent("mining:processCircle", function(input, gemRocks)
   }) 
   then 
     isProcess = false
-    TriggerServerEvent("mining:processReward", input, gemRocks)
+    TriggerServerEvent("mining:processReward", input, gemRocks, processedMaterial) -- Pass processedMaterial as an additional parameter
     local cfg = Config.Notifications[1]
     lib.notify(cfg.ProcessSuccessReward)
   end
 end)
+
 
 --! Mining
 function CreateRock(coords)
